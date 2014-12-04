@@ -63,9 +63,9 @@ local auth_header = ngx.req.get_headers().authorization
 
 -- check that the header is valid
 if not auth_header or auth_header == '' or not string.match(auth_header, '^[Bb]asic ') then
-    -- No Auth header found, redirect to main page
+    -- No Auth header found, redirect to login page
     ngx.log(ngx.ALERT, "[INTRUSION] Request without auth header: " .. ngx.var.remote_addr);
-    return ngx.redirect("/")
+    return ngx.redirect("/login")
 end
 
 local pretty = require 'pl.pretty'
