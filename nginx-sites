@@ -1,0 +1,34 @@
+
+server {
+    listen   80;
+    server_name _;
+    charset utf-8;
+
+    set $upstream_server "http://localhost:8080";
+
+    location /hello {
+        set $permissions_required 'permssion1,permission2';
+        set $features_required 'feature1,feature2';
+        access_by_lua_file /etc/nginx/auth.lua;
+
+        expires off;
+        rewrite ^/services/(.*) /$1 break;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-NginX-Proxy true;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_pass $upstream_server;
+        proxy_next_upstream error timeout http_502;
+    }
+
+    location /world {
+        set $permissions_required 'permssion1';
+        set $features_required '';
+        access_by_lua_file /etc/nginx/auth.lua;
+
+        default_type text/plain;
+        echo "Hello World!";
+    }
+
+}
+
